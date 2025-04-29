@@ -89,6 +89,7 @@ class _ChatRoomsScreenState extends State<ChatRoomsScreen> {
   Widget _buildGeneralChatCard(BuildContext context) {
     final generalRoom = chatRooms.firstWhere((room) => room['isGeneral']);
     return AppDesignSystem.card(
+      context: context,
       onTap: () => _navigateToChatScreen(context, generalRoom),
       child: Row(
         children: [
@@ -149,6 +150,7 @@ class _ChatRoomsScreenState extends State<ChatRoomsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: AppDesignSystem.card(
+        context: context,
         onTap: () => _navigateToChatScreen(context, room),
         child: Row(
           children: [

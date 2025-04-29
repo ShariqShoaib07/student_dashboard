@@ -1,7 +1,7 @@
-// lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 import '../utils/app_design_system.dart';
-import '../utils/theme.dart';
 import 'profile_edit_screen.dart';
 import '../services/auth_service.dart';
 import '../widgets/base_screen.dart';
@@ -15,8 +15,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
-  bool _darkModeEnabled = false;
-  String _selectedLanguage = 'English';
   String _selectedLogoutTime = '30 minutes';
 
   final List<String> _logoutTimes = [
@@ -28,6 +26,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return BaseScreen(
       title: 'Settings',
       body: ListView(
@@ -35,18 +35,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           // Notification Settings
           AppDesignSystem.card(
+            context: context,
             child: SwitchListTile(
               title: Text(
                 'Notifications',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               subtitle: Text(
                 'Enable or disable app notifications',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               value: _notificationsEnabled,
               onChanged: (value) {
@@ -54,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _notificationsEnabled = value;
                 });
               },
-              activeColor: AppColors.primary,
+              activeColor: Theme.of(context).colorScheme.primary,
             ),
           ),
 
@@ -62,27 +61,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Dark Mode Settings
           AppDesignSystem.card(
+            context: context,
             child: SwitchListTile(
               title: Text(
                 'Dark Mode',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               subtitle: Text(
                 'Switch between light and dark theme',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
-              value: _darkModeEnabled,
+              value: themeProvider.isDarkMode,
               onChanged: (value) {
-                setState(() {
-                  _darkModeEnabled = value;
-                  // TODO: Implement theme switching logic
-                });
+                themeProvider.toggleTheme();
               },
-              activeColor: AppColors.primary,
+              activeColor: Theme.of(context).colorScheme.primary,
             ),
           ),
 
@@ -90,6 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Auto Logout Time
           AppDesignSystem.card(
+            context: context,
             child: Padding(
               padding: AppDesignSystem.sectionPadding,
               child: Column(
@@ -97,9 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Auto Logout Time',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
@@ -107,7 +105,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: AppDesignSystem.defaultBorderRadius,
-                        borderSide: BorderSide(color: AppColors.lightGrey),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -138,6 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Edit Profile
           AppDesignSystem.card(
+            context: context,
             onTap: () {
               Navigator.push(
                 context,
@@ -147,16 +148,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
             child: ListTile(
-              leading: Icon(Icons.person, color: AppColors.primary),
+              leading: Icon(
+                Icons.person,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: Text(
                 'Edit Profile',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               trailing: Icon(
                 Icons.chevron_right,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
               ),
             ),
           ),
@@ -165,14 +167,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Logout
           AppDesignSystem.card(
+            context: context,
             onTap: _logout,
             child: ListTile(
-              leading: Icon(Icons.logout, color: AppColors.error),
+              leading: Icon(
+                Icons.logout,
+                color: Theme.of(context).colorScheme.error,
+              ),
               title: Text(
                 'Logout',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.error),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
           ),

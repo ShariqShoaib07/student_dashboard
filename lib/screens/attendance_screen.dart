@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../utils/theme.dart';
 import '../widgets/attendance_progress_bar.dart';
+import '../screens/attendance_records_screen.dart';
+import '../models/attendance_model.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -157,7 +159,51 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onPressed: () {
-                  // Navigate to detailed records
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => AttendanceRecordsScreen(
+                            summary: AttendanceSummary(
+                              overallPercentage: overallPercentage,
+                              totalPresent: 120, // Replace with actual data
+                              totalAbsent: 15, // Replace with actual data
+                              totalClasses: 135, // Replace with actual data
+                              monthlyData: [
+                                MonthlyAttendance(
+                                  month: 'January',
+                                  present: 25,
+                                  absent: 2,
+                                ),
+                                MonthlyAttendance(
+                                  month: 'February',
+                                  present: 22,
+                                  absent: 3,
+                                ),
+                                // Add more months
+                              ],
+                              subjects:
+                                  subjects
+                                      .map(
+                                        (s) => SubjectAttendance(
+                                          name: s['name'],
+                                          percentage: s['percentage'],
+                                          present:
+                                              20, // Replace with actual data
+                                          absent: 5, // Replace with actual data
+                                          totalClasses:
+                                              25, // Replace with actual data
+                                          recentAbsences: [
+                                            DateTime(2023, 5, 10),
+                                            DateTime(2023, 5, 3),
+                                          ], // Replace with actual data
+                                        ),
+                                      )
+                                      .toList(),
+                            ),
+                          ),
+                    ),
+                  );
                 },
                 child: const Text(
                   'View All Records',

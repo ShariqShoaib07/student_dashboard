@@ -1,6 +1,6 @@
-// lib/utils/app_design_system.dart
 import 'package:flutter/material.dart';
-import 'theme.dart';
+import 'badge_helper.dart';
+import '../services/notification_service.dart';
 
 class AppDesignSystem {
   // App-wide padding constants
@@ -33,8 +33,8 @@ class AppDesignSystem {
   }) {
     return AppBar(
       title: Text(title),
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
       elevation: 0,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
@@ -44,10 +44,15 @@ class AppDesignSystem {
   }
 
   // Card Style
-  static Card card({required Widget child, VoidCallback? onTap}) {
+  static Card card({
+    required BuildContext context,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: defaultBorderRadius),
+      color: Theme.of(context).cardTheme.color,
       child: InkWell(
         borderRadius: defaultBorderRadius,
         onTap: onTap,
@@ -57,12 +62,15 @@ class AppDesignSystem {
   }
 
   // Gradient Background
-  static BoxDecoration gradientBackground() {
+  static BoxDecoration gradientBackground(BuildContext context) {
     return BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [AppColors.primary.withOpacity(0.1), AppColors.background],
+        colors: [
+          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          Theme.of(context).colorScheme.background,
+        ],
       ),
     );
   }
@@ -81,17 +89,16 @@ class AppDesignSystem {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.primaryDark,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           if (actionText != null)
             TextButton(
               onPressed: onAction,
               child: Text(
                 actionText,
-                style: TextStyle(color: AppColors.primary),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             ),
         ],
@@ -101,6 +108,7 @@ class AppDesignSystem {
 
   // Stat Card
   static Widget statCard({
+    required BuildContext context,
     required IconData icon,
     required String value,
     required String label,
@@ -112,7 +120,10 @@ class AppDesignSystem {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [color.withOpacity(0.1), Colors.white],
+            colors: [
+              color.withOpacity(0.1),
+              Theme.of(context).colorScheme.surface,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -138,7 +149,12 @@ class AppDesignSystem {
                 color: color,
               ),
             ),
-            Text(label, style: TextStyle(color: AppColors.textSecondary)),
+            Text(
+              label,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
+            ),
           ],
         ),
       ),
@@ -147,6 +163,7 @@ class AppDesignSystem {
 
   // Message Input Field
   static Widget messageInput({
+    required BuildContext context,
     required TextEditingController controller,
     required FocusNode focusNode,
     required VoidCallback onSend,
@@ -155,7 +172,7 @@ class AppDesignSystem {
     return Container(
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -169,7 +186,7 @@ class AppDesignSystem {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.add, color: AppColors.primary),
+            icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
             onPressed: onAttach,
           ),
           Expanded(
@@ -180,16 +197,23 @@ class AppDesignSystem {
                 hintText: 'Type a message...',
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                hintStyle: TextStyle(color: Theme.of(context).hintColor),
+              ),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
+              icon: Icon(
+                Icons.send,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               onPressed: onSend,
             ),
           ),
@@ -202,12 +226,19 @@ class AppDesignSystem {
     required int currentIndex,
     required ValueChanged<int> onTap,
     required BuildContext context,
+    Map<String, int>? notificationCounts,
   }) {
+    final counts =
+        notificationCounts ??
+        {'attendance': 0, 'assessment': 0, 'chat': 0, 'settings': 0};
+
     return Container(
-      height: 70,
+      height: 80,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+        ),
       ),
       child: Stack(
         children: [
@@ -216,43 +247,73 @@ class AppDesignSystem {
             children: [
               // Left side items
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildNavItem(
-                      icon: Icons.calendar_today_outlined,
-                      label: 'Attendance',
-                      isSelected: currentIndex == 0,
-                      onTap: () => onTap(0),
-                    ),
-                    _buildNavItem(
-                      icon: Icons.assessment_outlined,
-                      label: 'Assessment',
-                      isSelected: currentIndex == 1,
-                      onTap: () => onTap(1),
-                    ),
-                  ],
+                child: Container(
+                  margin: const EdgeInsets.only(right: 28),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildNavItem(
+                        context: context,
+                        icon: Icons.calendar_today_outlined,
+                        label: 'Attendance',
+                        isSelected: currentIndex == 0,
+                        onTap: () {
+                          NotificationService().clearNotifications(
+                            'attendance',
+                          );
+                          onTap(0);
+                        },
+                        badgeCount: counts['attendance'] ?? 0,
+                      ),
+                      _buildNavItem(
+                        context: context,
+                        icon: Icons.assessment_outlined,
+                        label: 'Assessment',
+                        isSelected: currentIndex == 1,
+                        onTap: () {
+                          NotificationService().clearNotifications(
+                            'assessment',
+                          );
+                          onTap(1);
+                        },
+                        badgeCount: counts['assessment'] ?? 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
               // Right side items
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildNavItem(
-                      icon: Icons.chat_outlined,
-                      label: 'Chat',
-                      isSelected: currentIndex == 3,
-                      onTap: () => onTap(3),
-                    ),
-                    _buildNavItem(
-                      icon: Icons.settings,
-                      label: 'Settings',
-                      isSelected: currentIndex == 4,
-                      onTap: () => onTap(4),
-                    ),
-                  ],
+                child: Container(
+                  margin: const EdgeInsets.only(left: 28),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildNavItem(
+                        context: context,
+                        icon: Icons.chat_outlined,
+                        label: 'Chat',
+                        isSelected: currentIndex == 3,
+                        onTap: () {
+                          NotificationService().clearNotifications('chat');
+                          onTap(3);
+                        },
+                        badgeCount: counts['chat'] ?? 0,
+                      ),
+                      _buildNavItem(
+                        context: context,
+                        icon: Icons.settings,
+                        label: 'Settings',
+                        isSelected: currentIndex == 4,
+                        onTap: () {
+                          NotificationService().clearNotifications('settings');
+                          onTap(4);
+                        },
+                        badgeCount: counts['settings'] ?? 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -261,14 +322,17 @@ class AppDesignSystem {
           // Center button
           Center(
             child: Transform.translate(
-              offset: const Offset(0, -20),
+              offset: const Offset(0, -24),
               child: GestureDetector(
                 onTap: () => onTap(2),
                 child: Container(
-                  width: 56,
-                  height: 56,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
-                    color: currentIndex == 2 ? AppColors.primary : Colors.white,
+                    color:
+                        currentIndex == 2
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -280,14 +344,17 @@ class AppDesignSystem {
                     border: Border.all(
                       color:
                           currentIndex == 2
-                              ? AppColors.primary
-                              : Colors.grey.shade300,
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).dividerColor,
                       width: 1,
                     ),
                   ),
                   child: Icon(
                     currentIndex == 2 ? Icons.home : Icons.home_outlined,
-                    color: currentIndex == 2 ? Colors.white : AppColors.primary,
+                    color:
+                        currentIndex == 2
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.primary,
                     size: 28,
                   ),
                 ),
@@ -300,32 +367,52 @@ class AppDesignSystem {
   }
 
   static Widget _buildNavItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    int badgeCount = 0,
   }) {
+    Widget iconWidget = Icon(
+      icon,
+      size: 22,
+      color:
+          isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).textTheme.bodyMedium?.color,
+    );
+
+    if (badgeCount > 0) {
+      iconWidget = BadgeHelper.buildBadge(
+        child: iconWidget,
+        count: badgeCount,
+        color: Theme.of(context).colorScheme.error,
+      );
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          constraints: const BoxConstraints(minWidth: 56),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 24,
-                color: isSelected ? AppColors.primary : Colors.grey.shade600,
-              ),
+              iconWidget,
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: isSelected ? AppColors.primary : Colors.grey.shade600,
+                  fontSize: 11,
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
             ],

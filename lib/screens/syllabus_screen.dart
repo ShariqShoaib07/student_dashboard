@@ -52,6 +52,8 @@ class SyllabusScreen extends StatelessWidget {
     ),
   ];
 
+  SyllabusScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +96,7 @@ class SyllabusScreen extends StatelessWidget {
 
   Widget _buildSubjectCard(BuildContext context, Subject subject) {
     return AppDesignSystem.card(
+      context: context,
       onTap: () => _openPdfViewer(context, subject),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -249,8 +252,8 @@ class PdfViewerScreen extends StatelessWidget {
   const PdfViewerScreen({
     required this.pdfPath,
     required this.subjectName,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

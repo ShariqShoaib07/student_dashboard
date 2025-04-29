@@ -1,7 +1,6 @@
 // lib/screens/assessments_screen.dart
 import 'package:flutter/material.dart';
 import '../utils/app_design_system.dart';
-import '../widgets/assessment_card.dart';
 import '../utils/theme.dart';
 
 class AssessmentsScreen extends StatelessWidget {
@@ -61,9 +60,7 @@ class AssessmentsScreen extends StatelessWidget {
   }) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
@@ -74,10 +71,7 @@ class AssessmentsScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: [
-                color.withOpacity(0.9),
-                color.withOpacity(0.7),
-              ],
+              colors: [color.withOpacity(0.9), color.withOpacity(0.7)],
             ),
             borderRadius: BorderRadius.circular(12),
           ),

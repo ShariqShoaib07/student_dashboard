@@ -26,7 +26,7 @@ class BaseScreen extends StatelessWidget {
       appBar: AppDesignSystem.appBar(context, title, actions: actions),
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       body: Container(
-        decoration: AppDesignSystem.gradientBackground(),
+        decoration: AppDesignSystem.gradientBackground(context),
         child: SafeArea(child: body),
       ),
       floatingActionButton: floatingActionButton,

@@ -18,6 +18,7 @@ class AssessmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppDesignSystem.card(
+      context: context,
       onTap: () => _navigateToAssessmentDetails(context, title),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
